@@ -10,7 +10,6 @@ server.use(express.json());
 server.get("/", (req, res) => {
   res.send("Hello World");
 });
-// GET /api/users   for array/list of users
 server.get("/users", (req, res) => {
   db.get()
     .then(users => {
@@ -23,28 +22,23 @@ server.get("/users", (req, res) => {
         .json({ error: "The users information could not be retrieved" });
     });
 });
-// GET /api/users/:id  for specific id of user
-//PUT /api/users/:id you have to put updated body in the request this is to update the specific id
-//DELETE /api/users/:id all you need to delete a customer is the id
-//POST /api/users we are posting a new customer to the list. we need to have the body in the request.
 
 server.get("/users/:id", (req, res) => {
-  db.get(req.params.id) // to access ids, refer react router stuff.
-    .then(user => {
-      if (user) {
-        res.status(200).json(user);
-      } else {
-        res
-          .status(404)
-          .json({ message: "The user with the specified ID does not exist." })
+  db.get(req.params.id).then(user => {
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist." })
 
-          .catch(err => {
-            res
-              .status(500)
-              .json({ error: "The user information could not be retrieved." });
-          });
-      }
-    });
+        .catch(err => {
+          res
+            .status(500)
+            .json({ error: "The user information could not be retrieved." });
+        });
+    }
+  });
 });
 
 server.post("/users", (req, res) => {
