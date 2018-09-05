@@ -5,6 +5,13 @@ const cors = require("cors");
 
 const db = require("./data/helpers/userDb.js");
 const server = express();
+
+function upper(req, res, next) {
+  console.log(req.body.name);
+  req.body.name = req.body.name.toUpperCase();
+  next();
+}
+
 server.use(express.json());
 
 server.get("/", (req, res) => {
@@ -41,8 +48,9 @@ server.get("/users/:id", (req, res) => {
   });
 });
 
-server.post("/users", (req, res) => {
+server.post("/users", upper, (req, res) => {
   const user = req.body;
+  console.log(user);
   if (user.name) {
     try {
       const response = db.insert(user);
@@ -59,7 +67,7 @@ server.post("/users", (req, res) => {
   }
 });
 
-server.put("/users/:id", (req, res) => {
+server.put("/users/:id", upper, (req, res) => {
   const { id } = req.params;
   const user = req.body;
   db.update(id, user).then(count => {
@@ -67,18 +75,18 @@ server.put("/users/:id", (req, res) => {
       res
         .status(404)
         .json({ message: "The user with the specified ID does not exist." });
-    } else if (post.title && post.contents) {
+    } else if (user.name) {
       try {
         db.update(id, user);
         res.status(200).json(count);
       } catch (err) {
         res
           .status(500)
-          .json({ message: "The post information could not be modified" });
+          .json({ message: "The user information could not be modified" });
       }
     } else {
       res.status(400).json({
-        errorMessage: "Please provide title and contents for the post."
+        errorMessage: "Please provide user name for the post."
       });
     }
   });
