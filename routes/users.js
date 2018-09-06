@@ -2,6 +2,7 @@ const express = require("express");
 const db = require("./../data/helpers/userDb.js");
 const router = express.Router();
 const upper = require("./../middleware/upper");
+const posts = require("./posts");
 
 router.get("/", (req, res) => {
   db.get()
@@ -91,6 +92,25 @@ router.delete("/:id", (req, res) => {
       }
     })
     .catch(err => res.status(500).json(err));
+});
+
+router.get("/posts/:id", (req, res) => {
+  const { id } = req.params;
+  db.getUserPosts(id).then(user => {
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist." })
+
+        .catch(err => {
+          res
+            .status(500)
+            .json({ error: "The user information could not be retrieved." });
+        });
+    }
+  });
 });
 
 module.exports = router;
